@@ -7,6 +7,9 @@ Usage:
   tuyactl <device> switch [<state>]
   tuyactl <device> mode <mode>
   tuyactl <device> scene <scene-no>
+  tuyactl <device> white <brightness> <temp>
+  tuyactl <device> whiteper <valueper>
+  tuyactl <device> colorper <tempvalueper>
 """
 
 import tinytuya
@@ -83,6 +86,15 @@ if __name__ == "__main__":
         else:
             dev.set_colourtemp(int(arguments["<temp>"]))
     
+    if arguments["white"]:
+        dev.set_white(int(arguments["<brightness>"]), int(arguments["<temp>"]))
+
+    if arguments["whiteper"]:
+        dev.set_white_percentage(int(arguments["<valueper>"]))
+
+    if arguments["colorper"]:
+        dev.set_colourtemp_percentage(int(arguments["<tempvalueper>"]))
+
     #Mode and Scene are experimental. Some Features may not apply to your Device.
     if arguments["mode"]:
         dev.set_mode(mode=arguments["<mode>"])
