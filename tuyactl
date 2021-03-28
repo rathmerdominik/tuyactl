@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+"""
+Usage:
+  tuyactl <device> color [<r> <g> <b>]
+  tuyactl <device> brightness [<brightness>] 
+  tuyactl <device> temp [<temp>]
+  tuyactl <device> switch [<state>]
+  tuyactl <device> mode <mode>
+  tuyactl <device> scene <scene-no>
+"""
+
+import tinytuya
+from docopt import docopt
+import os
+from pathlib import Path
+import configparser
+import json
+
+class Device:
+    def __init__(self, id, ip, key):
+        self.id = id
+        self.ip = ip
+        self.key = key
+
+class Config:
+    devices = {}
+
+    paths = [
+        Path.home() / ".config" / "tuyactl" / "devices.ini",
+        Path('/etc') / "tuyactl" / "devices.ini",
+    ]
+
+    def get(self):
+        config_path = None
+        for path in self.paths:
+            if os.path.exists(path):
+                config_path = path
+
+        config = configparser.ConfigParser()
+        config.read(config_path)
+
+        for name in config.sections():
+            current = config[name]
+            self.devices[name] = Device(current['id'], current['ip'], current['key'])
+
+        if config is None:
+            raise Exception("No config file found")
+
+if __name__ == "__main__":
+    arguments = docopt(__doc__, version="soos")
+    cfg = Config()
+    cfg.get()
+    current = cfg.devices[arguments["<device>"]]
+    dev = tinytuya.BulbDevice(current.id, current.ip, current.key)
+    dev.set_version(3.3)
+
+    if arguments["switch"]:
+        if arguments["<state>"]:
+            if arguments["<state>"] == "on":
+                dev.turn_on()
+            elif arguments["<state>"] == "off":
+                dev.turn_off()
+            else:
+                raise Exception("Switching is only possible with \"on\" or \"off\"")
+        else:
+            print("on" if dev.state()["is_on"] else "off")          
+        
+    if arguments["color"]:
+        if not arguments["<r>"] or not arguments["<g>"] or not arguments["<b>"]:
+            print(' '.join(tuple(str(i) for i in dev.colour_rgb())))
+        else:
+            dev.set_colour(int(arguments["<r>"]), int(arguments["<g>"]), int(arguments["<b>"]))
+
+    if arguments["brightness"]:
+        if not arguments["brightness"]:
+            print(dev.brightness())
+        else:
+            dev.set_brightness(int(arguments["<brightness>"]))
+
+    if arguments["temp"]:
+        if not arguments["brightness"]:
+            print(dev.brightness())
+        else:
+            dev.set_colourtemp(int(arguments["<temp>"]))
+    
+    #Mode and Scene are experimental. Some Features may not apply to your Device.
+    if arguments["mode"]:
+        dev.set_mode(mode=arguments["<mode>"])
+
+    if arguments["scene"]:
+        dev.set_scene(int(arguments["<scene-no>"]))
