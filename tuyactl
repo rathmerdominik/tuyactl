@@ -39,6 +39,9 @@ class Config:
             if os.path.exists(path):
                 config_path = path
 
+        if config_path is None:
+            raise Exception("No config file found")
+
         config = configparser.ConfigParser()
         config.read(config_path)
 
@@ -46,11 +49,8 @@ class Config:
             current = config[name]
             self.devices[name] = Device(current['id'], current['ip'], current['key'])
 
-        if config is None:
-            raise Exception("No config file found")
-
 if __name__ == "__main__":
-    arguments = docopt(__doc__, version="soos")
+    arguments = docopt(__doc__)
     cfg = Config()
     cfg.get()
     current = cfg.devices[arguments["<device>"]]
