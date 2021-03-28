@@ -8,7 +8,7 @@ A python script to control tuya branded bulb devices from the shell.
 * Your Android based device has to be **rooted**. Alternatively you can install a Virtual Android Environment for that
 * Root supporting file explorer (I used Total Commander for this specific example)
 
-Your expected to know how to root your device. There are countless guides on the Internet for your specific model.
+You are expected to know how to root your device. There are countless guides on the Internet for your specific model.
 
 (Except if you use modern Phones from China, then you may be screwed)
 
