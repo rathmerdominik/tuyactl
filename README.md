@@ -45,11 +45,10 @@ key=xxx
 Here, `LAMP1` is a user-defined name, used to identify the device on the command line, as follows:
 
 ```sh
-tuyactl LAMP1 color         # to get the rgb color values
+# values after these subcommands are optional, leave them out to query the information instead
 tuyactl LAMP1 color 255 0 0 # set the color to red
 tuyactl LAMP1 brightness 0  # 0-1000
 tuyactl LAMP1 temp 0        # 0-1000, soft-hard
-tuyactl LAMP1 switch        # check whether the device is on or off
 tuyactl LAMP1 switch on     # or off
 
 # these two are experimental, so some features might not be available on your device
@@ -61,3 +60,4 @@ tuyactl LAMP1 scene 1       # 1=nature, 3=rave, 4=rainbow
 * Python >3.4
 * [tinytuya](https://pypi.org/project/tinytuya/)
 * [pycrypto](https://pypi.org/project/pycrypto/)
+* [docopt](https://pypi.org/project/docopt/)
