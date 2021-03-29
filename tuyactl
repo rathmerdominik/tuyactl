@@ -28,12 +28,18 @@ class Device:
 class Config:
     devices = {}
 
-    paths = [
-        Path.home() / ".config" / "tuyactl" / "devices.ini",
-        Path('/etc') / "tuyactl" / "devices.ini",
-    ]
+    def __init__(self):
+        self.paths = [
+            Path.home() / ".config" / "tuyactl" / "devices.ini",
+            Path("/etc") / "tuyactl" / "devices.ini",
+        ]
 
-    def get(self):
+        xdg_config_home = os.getenv("XDG_CONFIG_HOME")
+        if xdg_config_home is not None:
+            self.paths.insert(0, Path(xdg_config_home) / "tuyactl" / "devices.ini")
+
+    def search_path(self):
+        print(self.paths)
         config_path = None
         for path in self.paths:
             if os.path.exists(path):
@@ -42,17 +48,23 @@ class Config:
         if config_path is None:
             raise Exception("No config file found")
 
+        self.path = config_path
+        return config_path
+
+    def parse(self):
+        path = self.search_path()
+
         config = configparser.ConfigParser()
-        config.read(config_path)
+        config.read(path)
 
         for name in config.sections():
             current = config[name]
-            self.devices[name] = Device(current['id'], current['ip'], current['key'])
+            self.devices[name] = Device(current["id"], current["ip"], current["key"])
 
 if __name__ == "__main__":
     arguments = docopt(__doc__)
     cfg = Config()
-    cfg.get()
+    cfg.parse()
     current = cfg.devices[arguments["<device>"]]
     dev = tinytuya.BulbDevice(current.id, current.ip, current.key)
     dev.set_version(3.3)
@@ -70,7 +82,7 @@ if __name__ == "__main__":
 
     if arguments["color"]:
         if not arguments["<r>"] or not arguments["<g>"] or not arguments["<b>"]:
-            print(' '.join(tuple(str(i) for i in dev.colour_rgb())))
+            print(" ".join(tuple(str(i) for i in dev.colour_rgb())))
         else:
             dev.set_colour(int(arguments["<r>"]), int(arguments["<g>"]), int(arguments["<b>"]))
 
