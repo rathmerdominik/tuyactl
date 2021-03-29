@@ -29,8 +29,9 @@ These numbers are the ID of your device and apply to the nearest key.
 
 The following paths are used for configuration, in order:
 
-1. `~/.config/tuyactl/devices.ini`,
-2. `/etc/tuyactl/devices.ini`
+1. `$XDG_CONFIG_HOME/tuyactl/devices.ini`,
+2. `~/.config/tuyactl/devices.ini`,
+3. `/etc/tuyactl/devices.ini`
 
 Configuration example:
 
