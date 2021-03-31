@@ -11,6 +11,7 @@ Usage:
   tuyactl <device> whiteper <whiteper>
   tuyactl <device> colorper <colorper>
   tuyactl <device> slow [-i] <wait> <slow-hex>...
+  tuyactl <device> breathing [-i] <wait> <offtime> <slow-hex>...
 
 Options:
   -i, --infinite  loop indefinitely
@@ -77,12 +78,23 @@ class Transitions:
                 time.sleep(float(wait))
             if not infinite:
                 break
-
+    @staticmethod
+    def breathing(device, wait, colors, offtime, infinite):
+        while True:
+            for color in colors:
+                device.turn_on()
+                r, g, b = bytes.fromhex(color)      
+                device.set_colour(r, g ,b)
+                time.sleep(float(wait))
+                device.turn_off()
+                time.sleep(float(offtime))
+            if not infinite:
+                break
     @staticmethod
     def fast(device, colors):
         #Not possible for now. See this for reference https://github.com/jasonacox/tinytuya/issues/29
         pass
-                
+              
 if __name__ == "__main__":
     arguments = docopt(__doc__)
     cfg = Config()
@@ -139,6 +151,13 @@ if __name__ == "__main__":
     if arguments["slow"]:
         Transitions.slow(dev, arguments["<wait>"], arguments["<slow-hex>"], arguments["--infinite"])
     
+    if arguments["breathing"]:
+        Transitions.breathing(dev, arguments["<wait>"], arguments["<slow-hex>"], arguments["<offtime>"], arguments["--infinite"])
+
+
     #Not accessible for now
     if arguments["fast"]:
         Transitions.fast(dev, arguments["<fast-hex>"])
+
+    
+        
