@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Usage:
-  tuyactl <device> color [<r> <g> <b>]
+  tuyactl <device> color [<single-hex>]
   tuyactl <device> brightness [<brightness>]
   tuyactl <device> temp [<temp>]
   tuyactl <device> switch [<state>]
@@ -10,6 +10,10 @@ Usage:
   tuyactl <device> white <brightness> <temp>
   tuyactl <device> whiteper <whiteper>
   tuyactl <device> colorper <colorper>
+  tuyactl <device> slow [-i] <wait> <slow-hex>...
+
+Options:
+  -i, --infinite  loop indefinitely
 """
 
 import tinytuya
@@ -18,6 +22,7 @@ import os
 from pathlib import Path
 import configparser
 import json
+import time
 
 class Device:
     def __init__(self, id, ip, key):
@@ -60,6 +65,24 @@ class Config:
             current = config[name]
             self.devices[name] = Device(current["id"], current["ip"], current["key"])
 
+#Those are reimplementations of the "Smart Life" App
+class Transitions:
+
+    @staticmethod
+    def slow(device, wait, colors, infinite):
+        while True:
+            for color in colors: 
+                r, g, b = bytes.fromhex(color)      
+                device.set_colour(r, g ,b)
+                time.sleep(float(wait))
+            if not infinite:
+                break
+
+    @staticmethod
+    def fast(device, colors):
+        #Not possible for now. See this for reference https://github.com/jasonacox/tinytuya/issues/29
+        pass
+                
 if __name__ == "__main__":
     arguments = docopt(__doc__)
     cfg = Config()
@@ -67,7 +90,6 @@ if __name__ == "__main__":
     current = cfg.devices[arguments["<device>"]]
     dev = tinytuya.BulbDevice(current.id, current.ip, current.key)
     dev.set_version(3.3)
-
     if arguments["switch"]:
         if arguments["<state>"]:
             if arguments["<state>"] == "on":
@@ -80,10 +102,11 @@ if __name__ == "__main__":
             print("on" if dev.state()["is_on"] else "off")          
 
     if arguments["color"]:
-        if not arguments["<r>"] or not arguments["<g>"] or not arguments["<b>"]:
-            print(" ".join(tuple(str(i) for i in dev.colour_rgb())))
+        if not arguments["<single-hex>"]:           
+            print('%02x%02x%02x' % dev.colour_rgb())
         else:
-            dev.set_colour(int(arguments["<r>"]), int(arguments["<g>"]), int(arguments["<b>"]))
+            r, g, b = bytes.fromhex(arguments["<single-hex>"])
+            dev.set_colour(r, g ,b)
 
     if arguments["brightness"]:
         if not arguments["brightness"]:
@@ -112,3 +135,10 @@ if __name__ == "__main__":
 
     if arguments["scene"]:
         dev.set_scene(int(arguments["<scene-no>"]))
+
+    if arguments["slow"]:
+        Transitions.slow(dev, arguments["<wait>"], arguments["<slow-hex>"], arguments["--infinite"])
+    
+    #Not accessible for now
+    if arguments["fast"]:
+        Transitions.fast(dev, arguments["<fast-hex>"])
