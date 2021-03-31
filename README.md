@@ -59,7 +59,7 @@ tuyactl LAMP1 colorper 50       # 0-100
 # one type of transition is also supported:
 tuyactl slow -i 1 00ff00 ff0000 # fade from green to red, with one second of delay
 # an abrupt/fast transition is not (yet?) possible
-
+tuyactl breathing -i 1 1 00ff00 ff0000 #fade from green to red, with one second of delay and one second of off time
 # these two are experimental, so some features might not be available on your device
 tuyactl LAMP1 mode white        # white, colour, scene, music
 tuyactl LAMP1 scene 1           # 1=nature, 3=rave, 4=rainbow
