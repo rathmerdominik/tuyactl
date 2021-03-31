@@ -153,11 +153,11 @@ if __name__ == "__main__":
     
     if arguments["breathing"]:
         Transitions.breathing(dev, arguments["<wait>"], arguments["<slow-hex>"], arguments["<offtime>"], arguments["--infinite"])
-
-
+    
     #Not accessible for now
-    if arguments["fast"]:
-        Transitions.fast(dev, arguments["<fast-hex>"])
+    #if arguments["fast"]:
+    #    Transitions.fast(dev, arguments["<fast-hex>"])
+
 
     
         
