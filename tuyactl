@@ -127,7 +127,7 @@ if __name__ == "__main__":
             dev.set_brightness(int(arguments["<brightness>"]))
 
     if arguments["temp"]:
-        if not arguments["brightness"]:
+        if not arguments["<temp>"]:
             print(dev.brightness())
         else:
             dev.set_colourtemp(int(arguments["<temp>"]))
