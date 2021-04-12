@@ -44,6 +44,9 @@ key=xxx
 ```
 
 Here, `LAMP1` is a user-defined name, used to identify the device on the command line, as follows:
+INFO
+
+Some commands may be subject to change
 
 ```sh
 # values after these subcommands are optional, leave them out to query the information instead
