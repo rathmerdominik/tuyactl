@@ -1,3 +1,6 @@
+> [!WARNING]
+> I no longer use this project as i just use the Smart Home app.
+
 # tuyactl
 
 A python script to control tuya branded bulb devices from the shell.
